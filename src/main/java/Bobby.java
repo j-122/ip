@@ -7,12 +7,11 @@ public class Bobby {
                 + "|____/ \\___/|_.__/|_.__/ \\__, |\n"
                 + "                         |___/ \n";
         String greeting = "____________________________________________________________\n" +
-                banner +
                 "Hi! I'm Bobby.\n" +
                 "What can I do for you?\n" +
                 "____________________________________________________________\n";
 
         String exit = "Bye Bye!";
-        System.out.println(greeting + exit);
+        System.out.println(banner + greeting + exit);
     }
 }
