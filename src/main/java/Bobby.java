@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public class Bobby {
     public static void main(String[] args) {
         String banner = " ____        _     _           \n"
@@ -11,7 +13,17 @@ public class Bobby {
                 "What can I do for you?\n" +
                 "____________________________________________________________\n";
 
+        System.out.println(banner + greeting);
+
+        Scanner scanner = new Scanner(System.in);
         String exit = "Bye Bye!";
-        System.out.println(banner + greeting + exit);
+        String exitWord = "bye";
+        String inputLine = scanner.nextLine();
+
+        while (!inputLine.equals(exitWord)) {
+            System.out.println(inputLine);
+            inputLine = scanner.nextLine();
+        }
+        System.out.println(exit);
     }
 }
