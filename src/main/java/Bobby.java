@@ -20,22 +20,40 @@ public class Bobby {
         Scanner scanner = new Scanner(System.in);
         String inputLine = scanner.nextLine();
 
-        String exitCommand = "bye";
-        String listCommand = "list";
+        final String EXIT_COMMAND = "bye";
+        final String LIST_COMMAND = "list";
+        final String MARK_COMMAND = "mark";
+        final String UNMARK_COMMAND = "unmark";
 
-        String[] list = new String[100];
+        Task[] tasks = new Task[100];
         int numOfTasks = 0;
 
-        while (!inputLine.equals(exitCommand)) {
-            if (inputLine.equals(listCommand)) {
+        while (!inputLine.equals(EXIT_COMMAND)) {
+            if (inputLine.equals(LIST_COMMAND)) {
+                System.out.println("Here are your tasks:");
                 for (int i = 0; i < numOfTasks; i++) {
-                    System.out.println(String.valueOf(i+1) + ". " + list[i]);
+                    System.out.println(String.valueOf(i + 1)
+                            + ". ["
+                            + tasks[i].getStatusIcon()
+                            + "] "
+                            + tasks[i].getTaskDescription());
                 }
+            } else if (inputLine.startsWith(MARK_COMMAND)) {
+                String[] parts = inputLine.split(" ");
+                int taskIndex = Integer.parseInt(parts[1]) - 1;
+                tasks[taskIndex].markAsDone();
+                System.out.println("Good, this task is done:\n\t[X] " + tasks[taskIndex].getTaskDescription());
+            } else if (inputLine.startsWith(UNMARK_COMMAND)) {
+                String[] parts = inputLine.split(" ");
+                int taskIndex = Integer.parseInt(parts[1]) - 1;
+                tasks[taskIndex].markAsNotDone();
+                System.out.println("Okay, this task is not done:\n\t[ ] " + tasks[taskIndex].getTaskDescription());
             } else {
-                list[numOfTasks] = inputLine;
+                tasks[numOfTasks] = new Task(inputLine);
                 numOfTasks++;
                 System.out.println("added " + inputLine);
             }
+
             inputLine = scanner.nextLine();
         }
 
