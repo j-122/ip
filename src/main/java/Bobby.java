@@ -19,11 +19,23 @@ public class Bobby {
         String exit = "Bye Bye!";
         String exitWord = "bye";
         String inputLine = scanner.nextLine();
+        String[] list = new String[100];
+        String listWord = "list";
+        int numOfTasks = 0;
 
         while (!inputLine.equals(exitWord)) {
-            System.out.println(inputLine);
+            if (inputLine.equals(listWord)) {
+                for (int i = 0; i < numOfTasks; i++) {
+                    System.out.println(String.valueOf(i+1) + ". " + list[i]);
+                }
+            } else {
+                list[numOfTasks] = inputLine;
+                numOfTasks++;
+                System.out.println("added " + inputLine);
+            }
             inputLine = scanner.nextLine();
         }
+
         System.out.println(exit);
     }
 }
