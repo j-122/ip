@@ -13,18 +13,21 @@ public class Bobby {
                 "What can I do for you?\n" +
                 "____________________________________________________________\n";
 
+        String exit = "Bye Bye!\n";
+
         System.out.println(banner + greeting);
 
         Scanner scanner = new Scanner(System.in);
-        String exit = "Bye Bye!";
-        String exitWord = "bye";
         String inputLine = scanner.nextLine();
+
+        String exitCommand = "bye";
+        String listCommand = "list";
+
         String[] list = new String[100];
-        String listWord = "list";
         int numOfTasks = 0;
 
-        while (!inputLine.equals(exitWord)) {
-            if (inputLine.equals(listWord)) {
+        while (!inputLine.equals(exitCommand)) {
+            if (inputLine.equals(listCommand)) {
                 for (int i = 0; i < numOfTasks; i++) {
                     System.out.println(String.valueOf(i+1) + ". " + list[i]);
                 }
