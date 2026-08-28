@@ -1,6 +1,6 @@
 public class Task {
     private String description;
-    private Boolean isDone;
+    private boolean isDone;
 
     public Task(String description) {
         this.description = description;
@@ -16,7 +16,7 @@ public class Task {
     }
 
     public void markAsDone() {
-        this.isDone = true;
+        isDone = true;
     }
 
     public void markAsNotDone() {
