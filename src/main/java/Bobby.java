@@ -1,26 +1,13 @@
 import java.util.Scanner;
 
 public class Bobby {
+    private static final String EXIT_COMMAND = "bye";
+    private static final String LIST_COMMAND = "list";
+    private static final String MARK_COMMAND = "mark";
+    private static final String UNMARK_COMMAND = "unmark";
+
     public static void main(String[] args) {
-        String banner = " ____        _     _           \n"
-                + "| __ )  ___ | |__ | |__  _   _ \n"
-                + "|  _ \\ / _ \\| '_ \\| '_ \\| | | |\n"
-                + "| |_) | (_) | |_) | |_) | |_| |\n"
-                + "|____/ \\___/|_.__/|_.__/ \\__, |\n"
-                + "                         |___/ \n";
-        String greeting = "____________________________________________________________\n" +
-                "Hi! I'm Bobby.\n" +
-                "What can I do for you?\n" +
-                "____________________________________________________________\n";
-
-        String exit = "Bye Bye!\n";
-
-        System.out.println(banner + greeting);
-
-        final String EXIT_COMMAND = "bye";
-        final String LIST_COMMAND = "list";
-        final String MARK_COMMAND = "mark";
-        final String UNMARK_COMMAND = "unmark";
+        greetUser();
 
         Task[] tasks = new Task[100];
         int taskCount = 0;
@@ -62,6 +49,23 @@ public class Bobby {
             inputLine = scanner.nextLine();
         }
 
-        System.out.println(exit);
+        sayGoodbye();
+    }
+
+    private static void greetUser() {
+        System.out.println(" ____        _     _           \n"
+                + "| __ )  ___ | |__ | |__  _   _ \n"
+                + "|  _ \\ / _ \\| '_ \\| '_ \\| | | |\n"
+                + "| |_) | (_) | |_) | |_) | |_| |\n"
+                + "|____/ \\___/|_.__/|_.__/ \\__, |\n"
+                + "                         |___/ \n"
+                + "____________________________________________________________\n"
+                + "Hi! I'm Bobby.\n"
+                + "What can I do for you?\n"
+                + "____________________________________________________________\n");
+    }
+
+    private static void sayGoodbye() {
+        System.out.println("Bye Bye!");
     }
 }
