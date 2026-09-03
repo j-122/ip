@@ -11,14 +11,17 @@ public class Bobby {
     private static final String MARK_COMMAND = "mark";
     private static final String UNMARK_COMMAND = "unmark";
     private static final String TODO_KEYWORD = "todo";
-    private static final String DEADLINE_COMMAND = "deadline";
-    private static final String EVENT_COMMAND = "event";
+    private static final String DEADLINE_KEYWORD = "deadline";
+    private static final String EVENT_KEYWORD = "event";
+
 
     public static void main(String[] args) {
         greetUser();
         beginInputProcessing();
         sayGoodbye();
     }
+
+
 
     private static void greetUser() {
         System.out.println(" ____        _     _           \n"
@@ -27,10 +30,10 @@ public class Bobby {
                 + "| |_) | (_) | |_) | |_) | |_| |\n"
                 + "|____/ \\___/|_.__/|_.__/ \\__, |\n"
                 + "                         |___/ \n"
-                + "____________________________________________________________\n"
+                + "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
                 + "Hi! I'm Bobby.\n"
                 + "What can I do for you?\n"
-                + "____________________________________________________________\n");
+                + "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
     }
 
     private static void sayGoodbye() {
@@ -52,58 +55,76 @@ public class Bobby {
 
     private static boolean handleInput(String inputLine) {
         String[] arguments = inputLine.split(" ", 2);
+        boolean isRunning = true;
+
         switch (arguments[0]) {
-            case EXIT_COMMAND -> {
-                return false;
-            }
-            case MARK_COMMAND -> {
-                String[] parts = inputLine.split(" ");
-                int taskIndex = Integer.parseInt(parts[1]) - 1;
-                tasks[taskIndex].markAsDone();
-
-                System.out.println("Good, this task is done:\n\t[X] "
-                        + tasks[taskIndex].getTaskDescription());
-            }
-            case UNMARK_COMMAND -> {
-                String[] parts = inputLine.split(" ");
-                int taskIndex = Integer.parseInt(parts[1]) - 1;
-                tasks[taskIndex].markAsNotDone();
-
-                System.out.println("Okay, this task is not done:\n\t[ ] "
-                        + tasks[taskIndex].getTaskDescription());
-            }
-            case LIST_COMMAND -> {
-                System.out.println("Here are your tasks:");
-                for (int i = 0; i < taskCount; i++) {
-                    System.out.print(i + 1);
-                    System.out.println(". " + tasks[i]);
-                }
-            }
-            case TODO_KEYWORD -> {
-                tasks[taskCount] = new Todo(arguments[1]);
-                System.out.println("added " + tasks[taskCount]);
-                taskCount++;
-            }
-            case DEADLINE_COMMAND -> {
-                String[] args = arguments[1].split("/");
-                tasks[taskCount] = new Deadline(args[0].strip(), args[1]);
-                System.out.println("added " + tasks[taskCount]);
-                taskCount++;
-
-            }
-            case EVENT_COMMAND -> {
-                String[] args = arguments[1].split("/");
-                tasks[taskCount] = new Event(args[0].strip(), args[1].strip(), args[2]);
-                System.out.println("added " + tasks[taskCount]);
-                taskCount++;
-            }
+            case EXIT_COMMAND -> isRunning = false;
+            case LIST_COMMAND -> showAllTasks();
+            case MARK_COMMAND -> handleTaskMarking(arguments[1]);
+            case UNMARK_COMMAND -> handleTaskUnmarking(arguments[1]);
+            case TODO_KEYWORD -> addTodo(arguments[1]);
+            case DEADLINE_KEYWORD -> addDeadline(arguments[1]);
+            case EVENT_KEYWORD -> addEvent(arguments[1]);
             default -> System.out.println("Invalid input. Please try again.");
         }
-        return true;
+
+        return isRunning;
     }
 
     private static void initTaskList() {
         tasks = new Task[MAX_TASK_COUNT];
         taskCount = 0;
+    }
+
+    private static void showAllTasks() {
+        System.out.println("Here are your tasks:");
+        for (int i = 0; i < taskCount; i++) {
+            System.out.println((i + 1) + ". " + tasks[i]);
+        }
+    }
+
+    private static void handleTaskMarking(String index) {
+        int taskIndex = Integer.parseInt(index) - 1;
+        tasks[taskIndex].markAsDone();
+
+        System.out.println("Good, this task is done: " + tasks[taskIndex]);
+    }
+
+    private static void handleTaskUnmarking(String index) {
+        int taskIndex = Integer.parseInt(index) - 1;
+        tasks[taskIndex].markAsNotDone();
+
+        System.out.println("Okay, this task is not done: " + tasks[taskIndex]);
+    }
+    
+    private static void addTodo(String description) {
+        tasks[taskCount] = new Todo(description);
+
+        registerNewTask();
+        showTaskCount();
+    }
+    private static void addDeadline(String description) {
+        String[] args = description.split("/");
+        tasks[taskCount] = new Deadline(args[0].strip(), args[1]);
+
+        registerNewTask();
+        showTaskCount();
+    }
+
+    private static void addEvent(String description) {
+        String[] args = description.split("/");
+        tasks[taskCount] = new Event(args[0].strip(), args[1].strip(), args[2]);
+
+        registerNewTask();
+        showTaskCount();
+    }
+
+    private static void registerNewTask() {
+        System.out.println("added: \n\t" + tasks[taskCount]);
+        taskCount++;
+    }
+
+    private static void showTaskCount() {
+        System.out.println("You now have " + taskCount + " pending tasks.");
     }
 }
