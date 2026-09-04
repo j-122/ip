@@ -98,30 +98,24 @@ public class Bobby {
     }
     
     private static void addTodo(String description) {
-        tasks[taskCount] = new Todo(description);
-
-        registerNewTask();
-        showTaskCount();
+        registerNewTask(new Todo(description));
     }
     private static void addDeadline(String description) {
         String[] args = description.split("/");
-        tasks[taskCount] = new Deadline(args[0].strip(), args[1]);
-
-        registerNewTask();
-        showTaskCount();
+        registerNewTask(new Deadline(args[0].strip(), args[1]));
     }
 
     private static void addEvent(String description) {
         String[] args = description.split("/");
-        tasks[taskCount] = new Event(args[0].strip(), args[1].strip(), args[2]);
-
-        registerNewTask();
-        showTaskCount();
+        registerNewTask(new Event(args[0].strip(), args[1].strip(), args[2]));
     }
 
-    private static void registerNewTask() {
+    private static void registerNewTask(Task newTask) {
+        tasks[taskCount] = newTask;
+
         System.out.println("added: \n\t" + tasks[taskCount]);
         taskCount++;
+        showTaskCount();
     }
 
     private static void showTaskCount() {
