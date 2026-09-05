@@ -1,9 +1,6 @@
 import java.util.Scanner;
 
 public class Bobby {
-    private static Task[] tasks;
-    private static int taskCount;
-
     private static final int MAX_TASK_COUNT = 100;
 
     private static final String EXIT_COMMAND = "bye";
@@ -14,13 +11,15 @@ public class Bobby {
     private static final String DEADLINE_KEYWORD = "deadline";
     private static final String EVENT_KEYWORD = "event";
 
+    private static Task[] tasks;
+    private static int taskCount;
+
 
     public static void main(String[] args) {
         greetUser();
         beginInputProcessing();
         sayGoodbye();
     }
-
 
 
     private static void greetUser() {
@@ -100,6 +99,7 @@ public class Bobby {
     private static void addTodo(String description) {
         registerNewTask(new Todo(description));
     }
+
     private static void addDeadline(String description) {
         String[] args = description.split("/");
         registerNewTask(new Deadline(args[0].strip(), args[1]));
@@ -112,9 +112,9 @@ public class Bobby {
 
     private static void registerNewTask(Task newTask) {
         tasks[taskCount] = newTask;
-
-        System.out.println("added: \n\t" + tasks[taskCount]);
         taskCount++;
+
+        System.out.println("added: \n\t" + newTask);
         showTaskCount();
     }
 
