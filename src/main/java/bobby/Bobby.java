@@ -1,3 +1,12 @@
+package bobby;
+
+import bobby.exception.InvalidTaskException;
+import bobby.exception.TaskNotFoundException;
+import bobby.task.Deadline;
+import bobby.task.Event;
+import bobby.task.Task;
+import bobby.task.Todo;
+
 import java.util.Scanner;
 
 public class Bobby {
@@ -37,6 +46,15 @@ public class Bobby {
 
     private static void sayGoodbye() {
         System.out.println("Bye Bye!");
+    }
+
+    private static void printErrorMessage(String message) {
+        System.out.println("ERROR: " + message);
+    }
+
+    private static void initTaskList() {
+        tasks = new Task[MAX_TASK_COUNT];
+        taskCount = 0;
     }
 
     private static void beginInputProcessing() {
@@ -82,14 +100,6 @@ public class Bobby {
         return isRunning;
     }
 
-    private static void printErrorMessage(String message) {
-        System.out.println("ERROR: " + message);
-    }
-
-    private static void initTaskList() {
-        tasks = new Task[MAX_TASK_COUNT];
-        taskCount = 0;
-    }
 
     private static void showAllTasks() {
         if (taskCount < 1) {
@@ -102,21 +112,22 @@ public class Bobby {
         }
     }
 
-    private static void handleTaskMarking(String[] args) {
-        if (args.length != 2) {
-            throw new TaskNotFoundException("Task number is missing...");
-        }
 
-        int taskIndex = Integer.parseInt(args[1].strip()) - 1;
-        if (taskIndex < 0 || taskIndex >= taskCount) {
-            throw new TaskNotFoundException("You have " + taskCount + " tasks. Please pick within the limits...");
-        }
+    private static void handleTaskMarking(String[] args) {
+        int taskIndex = getTaskIndex(args);
 
         tasks[taskIndex].markAsDone();
         System.out.println("Good, this task is done: " + tasks[taskIndex]);
     }
 
     private static void handleTaskUnmarking(String[] args) {
+        int taskIndex = getTaskIndex(args);
+
+        tasks[taskIndex].markAsNotDone();
+        System.out.println("Okay, this task is not done: " + tasks[taskIndex]);
+    }
+
+    private static int getTaskIndex(String[] args) {
         if (args.length != 2) {
             throw new TaskNotFoundException("Task number is missing...");
         }
@@ -125,11 +136,10 @@ public class Bobby {
         if (taskIndex < 0 || taskIndex >= taskCount) {
             throw new TaskNotFoundException("You have " + taskCount + " tasks. Please pick within the limits...");
         }
-
-        tasks[taskIndex].markAsNotDone();
-        System.out.println("Okay, this task is not done: " + tasks[taskIndex]);
+        return taskIndex;
     }
-    
+
+
     private static void addTodo(String[] args) {
         if (args.length != 2) {
             throw new InvalidTaskException("Task description is missing...");

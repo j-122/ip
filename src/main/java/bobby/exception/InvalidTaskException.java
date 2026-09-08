@@ -1,5 +1,7 @@
+package bobby.exception;
+
 public class InvalidTaskException extends RuntimeException {
-    InvalidTaskException(String message) {
+    public InvalidTaskException(String message) {
         super(message);
     }
 }

@@ -1,5 +1,7 @@
+package bobby.exception;
+
 public class TaskNotFoundException extends RuntimeException {
-    TaskNotFoundException(String message) {
+    public TaskNotFoundException(String message) {
         super(message);
     }
 }
