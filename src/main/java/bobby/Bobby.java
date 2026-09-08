@@ -10,7 +10,7 @@ import bobby.task.Todo;
 import java.util.Scanner;
 
 public class Bobby {
-    private static final int MAX_TASK_COUNT = 100;
+    private static TaskManager taskManager;
 
     private static final String EXIT_COMMAND = "bye";
     private static final String LIST_COMMAND = "list";
@@ -19,9 +19,6 @@ public class Bobby {
     private static final String TODO_KEYWORD = "todo";
     private static final String DEADLINE_KEYWORD = "deadline";
     private static final String EVENT_KEYWORD = "event";
-
-    private static Task[] tasks;
-    private static int taskCount;
 
 
     public static void main(String[] args) {
@@ -52,15 +49,11 @@ public class Bobby {
         System.out.println("ERROR: " + message);
     }
 
-    private static void initTaskList() {
-        tasks = new Task[MAX_TASK_COUNT];
-        taskCount = 0;
-    }
 
     private static void beginInputProcessing() {
-        initTaskList();
-
+        taskManager = new TaskManager();
         Scanner scanner = new Scanner(System.in);
+
         String inputLine;
         boolean isRunning = true;
 
@@ -100,43 +93,32 @@ public class Bobby {
         return isRunning;
     }
 
-
     private static void showAllTasks() {
-        if (taskCount < 1) {
-            System.out.println("So empty...");
-        } else {
-            System.out.println("Here are your tasks:");
-            for (int i = 0; i < taskCount; i++) {
-                System.out.println((i + 1) + ". " + tasks[i]);
-            }
-        }
+        taskManager.printTaskList();
     }
 
-
     private static void handleTaskMarking(String[] args) {
-        int taskIndex = getTaskIndex(args);
+        int taskIndex = getTaskNumber(args);
+        Task task = taskManager.getTask(taskIndex);
+        task.markAsDone();
 
-        tasks[taskIndex].markAsDone();
-        System.out.println("Good, this task is done: " + tasks[taskIndex]);
+        System.out.println("Good, this task is done: " + task);
     }
 
     private static void handleTaskUnmarking(String[] args) {
-        int taskIndex = getTaskIndex(args);
+        int taskIndex = getTaskNumber(args);
+        Task task = taskManager.getTask(taskIndex);
+        task.markAsNotDone();
 
-        tasks[taskIndex].markAsNotDone();
-        System.out.println("Okay, this task is not done: " + tasks[taskIndex]);
+        System.out.println("Okay, this task is not done: " + task);
     }
 
-    private static int getTaskIndex(String[] args) {
+    private static int getTaskNumber(String[] args) {
         if (args.length != 2) {
             throw new TaskNotFoundException("Task number is missing...");
         }
 
-        int taskIndex = Integer.parseInt(args[1].strip()) - 1;
-        if (taskIndex < 0 || taskIndex >= taskCount) {
-            throw new TaskNotFoundException("You have " + taskCount + " tasks. Please pick within the limits...");
-        }
-        return taskIndex;
+        return Integer.parseInt(args[1].strip());
     }
 
 
@@ -145,7 +127,7 @@ public class Bobby {
             throw new InvalidTaskException("Task description is missing...");
         }
 
-        registerNewTask(new Todo(args[1].strip()));
+        taskManager.addTask(new Todo(args[1].strip()));
     }
 
     private static void addDeadline(String[] args) {
@@ -158,7 +140,7 @@ public class Bobby {
             throw new InvalidTaskException("Task is missing a deadline. Format: <description> /<deadline>");
         }
 
-        registerNewTask(new Deadline(contents[0].strip(), contents[1].strip()));
+        taskManager.addTask(new Deadline(contents[0].strip(), contents[1].strip()));
     }
 
     private static void addEvent(String[] args) {
@@ -171,21 +153,6 @@ public class Bobby {
             throw new InvalidTaskException("Task is missing a timeframe. Format: <description> /<start> /<end>");
         }
 
-        registerNewTask(new Event(contents[0].strip(), contents[1].strip(), contents[2].strip()));
-    }
-
-    private static void registerNewTask(Task newTask) {
-        if (taskCount >= MAX_TASK_COUNT) {
-            throw new InvalidTaskException("You have reached the limit on number of tasks.");
-        }
-
-        if (newTask.getTaskDescription().isBlank()) {
-            throw new InvalidTaskException("Task description is missing...");
-        }
-
-        tasks[taskCount] = newTask;
-        taskCount++;
-
-        System.out.println("added: \n\t" + newTask + "\nYou now have " + taskCount + " pending tasks.");
+        taskManager.addTask(new Event(contents[0].strip(), contents[1].strip(), contents[2].strip()));
     }
 }
