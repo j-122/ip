@@ -36,8 +36,15 @@ public class TaskManager {
         }
 
         tasks.add(task);
-
         System.out.println("added: \n\t" + task + "\nYou now have " + tasks.size() + " pending tasks.");
+    }
+
+    public void deleteTask(int taskNumber) {
+        Task task = this.getTask(taskNumber);
+        tasks.remove(task);
+
+        System.out.println("removed: \n\t" + task + "\nYou now have " + tasks.size() + " pending tasks.");
+
     }
 
     public void printTaskList() {
