@@ -4,31 +4,30 @@ import bobby.exception.InvalidTaskException;
 import bobby.exception.TaskNotFoundException;
 import bobby.task.Task;
 
+import java.util.ArrayList;
+
 public class TaskManager {
     private static final int MAX_TASK_COUNT = 100;
-
-    private Task[] tasks;
-    private int taskCount;
+    private ArrayList<Task> tasks;
 
     TaskManager() {
-        tasks = new Task[MAX_TASK_COUNT];
-        taskCount = 0;
+        tasks = new ArrayList<>();
     }
 
     public Task getTask(int taskNumber) {
-        if (taskNumber < 1 || taskNumber > taskCount) {
-            throw new TaskNotFoundException("You have " + taskCount + " tasks. Please pick within the limits...");
+        if (taskNumber < 1 || taskNumber > tasks.size()) {
+            throw new TaskNotFoundException("You have " + tasks.size() + " tasks. Please pick within the limits...");
         }
 
-        return tasks[taskNumber - 1];
+        return tasks.get(taskNumber - 1);
     }
 
     public int getTaskCount() {
-        return taskCount;
+        return tasks.size();
     }
 
     public void addTask(Task task) {
-        if (taskCount >= MAX_TASK_COUNT) {
+        if (tasks.size() >= MAX_TASK_COUNT) {
             throw new InvalidTaskException("You have reached the limit on number of tasks.");
         }
 
@@ -36,19 +35,18 @@ public class TaskManager {
             throw new InvalidTaskException("Task description is missing...");
         }
 
-        tasks[taskCount] = task;
-        taskCount++;
+        tasks.add(task);
 
-        System.out.println("added: \n\t" + task + "\nYou now have " + taskCount + " pending tasks.");
+        System.out.println("added: \n\t" + task + "\nYou now have " + tasks.size() + " pending tasks.");
     }
 
     public void printTaskList() {
-        if (taskCount < 1) {
+        if (tasks.isEmpty()) {
             System.out.println("So empty...");
         } else {
             System.out.println("Here are your tasks:");
-            for (int i = 0; i < taskCount; i++) {
-                System.out.println((i + 1) + ". " + tasks[i]);
+            for (int i = 0; i < tasks.size(); i++) {
+                System.out.println("\t" + (i + 1) + ". " + tasks.get(i));
             }
         }
     }

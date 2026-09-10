@@ -49,7 +49,6 @@ public class Bobby {
         System.out.println("ERROR: " + message);
     }
 
-
     private static void beginInputProcessing() {
         taskManager = new TaskManager();
         Scanner scanner = new Scanner(System.in);
@@ -120,7 +119,6 @@ public class Bobby {
 
         return Integer.parseInt(args[1].strip());
     }
-
 
     private static void addTodo(String[] args) {
         if (args.length != 2) {
