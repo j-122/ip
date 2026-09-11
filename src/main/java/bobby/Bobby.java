@@ -105,6 +105,7 @@ public class Bobby {
         task.markAsDone();
 
         System.out.println("Good, this task is done: " + task);
+        taskManager.applyFileChanges();
     }
 
     private static void handleTaskUnmarking(String[] args) {
@@ -113,6 +114,7 @@ public class Bobby {
         task.markAsNotDone();
 
         System.out.println("Okay, this task is not done: " + task);
+        taskManager.applyFileChanges();
     }
 
     private static int getTaskNumber(String[] args) {

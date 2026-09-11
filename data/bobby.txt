@@ -1,0 +1,4 @@
+T | 1 | wdd
+T | 0 | fwfw
+E | 0 | wewf | wefwf | ewf
+D | 0 | wfw | wffe

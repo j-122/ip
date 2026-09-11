@@ -4,15 +4,21 @@ import bobby.exception.InvalidTaskException;
 import bobby.exception.TaskNotFoundException;
 import bobby.task.Task;
 
+import java.io.IOException;
+
 public class TaskManager {
     private static final int MAX_TASK_COUNT = 100;
 
     private Task[] tasks;
     private int taskCount;
 
+    private FileManager fileManager;
+
     TaskManager() {
+        fileManager = new FileManager();
+
         tasks = new Task[MAX_TASK_COUNT];
-        taskCount = 0;
+        taskCount = fileManager.loadFile(tasks);
     }
 
     public Task getTask(int taskNumber) {
@@ -40,6 +46,20 @@ public class TaskManager {
         taskCount++;
 
         System.out.println("added: \n\t" + task + "\nYou now have " + taskCount + " pending tasks.");
+
+        try {
+            fileManager.addTaskToFile(task);
+        } catch (IOException e) {
+            System.out.println("ERROR: Something wrong with file.");
+        }
+    }
+
+    public void applyFileChanges() {
+        try {
+            fileManager.saveFile(tasks, taskCount);
+        } catch (IOException e) {
+            System.out.println("ERROR: Something wrong with file.");
+        }
     }
 
     public void printTaskList() {
