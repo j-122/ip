@@ -23,7 +23,9 @@ public class Bobby {
 
     public static void main(String[] args) {
         greetUser();
+        //loadTaskList();
         beginInputProcessing();
+        //saveTaskList();
         sayGoodbye();
     }
 
