@@ -5,56 +5,70 @@ import bobby.task.Task;
 import java.util.ArrayList;
 
 public class Printer {
+    private static final String BORDER = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+
+    private static void printWithBorder(String message) {
+        System.out.println(BORDER);
+        System.out.println(indented(message));
+        System.out.println(BORDER);
+    }
+
+    private static String indented(String message) {
+        return "\t" + message.replace("\n", "\n\t");
+    }
+
     public static void printBanner() {
-        System.out.println(" ____        _     _           \n"
+        System.out.println(
+                  " ____        _     _           \n"
                 + "| __ )  ___ | |__ | |__  _   _ \n"
                 + "|  _ \\ / _ \\| '_ \\| '_ \\| | | |\n"
                 + "| |_) | (_) | |_) | |_) | |_| |\n"
                 + "|____/ \\___/|_.__/|_.__/ \\__, |\n"
-                + "                         |___/ \n");
+                + "                         |___/ \n"
+        );
     }
 
     public static void printWelcomeMessage() {
-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
-                + "Hi! I'm Bobby.\n"
-                + "What can I do for you?\n"
-                + "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+        printWithBorder("Hi! I'm Bobby.\nWhat can I do for you?\n");
     }
 
     public static void printGoodbyeMessage() {
-        System.out.println("Bye Bye!");
+        printWithBorder("Bye Bye!");
     }
 
     public static void printErrorMessage(String message) {
-        System.out.println("ERROR: " + message);
+        printWithBorder("ERROR: " + message);
     }
 
     public static void printMarkedTask(Task task) {
-        System.out.println("Good, this task is done: " + task);
+        printWithBorder("Good, this task is done: " + task);
+    }
+
+    public static void printUnmarkedTask(Task task) {
+        printWithBorder("Okay, this task is not done: " + task);
     }
 
     public static void printAddedTask(Task task, int taskCount) {
-        System.out.println("added: \n\t" + task
+        printWithBorder("added: \n\t" + task
                 + "\nYou now have " + taskCount + " pending tasks.");
     }
 
     public static void printDeletedTask(Task task, int taskCount) {
-        System.out.println("removed: \n\t" + task
+        printWithBorder("removed: \n\t" + task
                 + "\nYou now have " + taskCount + " pending tasks.");
     }
 
-    public static void printUnmarkedTask(Task task) {
-        System.out.println("Okay, this task is not done: " + task);
-    }
-
     public static void printTaskList(ArrayList<Task> tasks) {
+        String message;
         if (tasks.isEmpty()) {
-            System.out.println("So empty...");
+            message = "So empty...";
         } else {
-            System.out.println("Here are your tasks:");
+            message = "Here are your tasks:\n";
             for (int i = 0; i < tasks.size(); i++) {
-                System.out.println("\t" + (i + 1) + ". " + tasks.get(i));
+                message += "\t" + (i + 1) + ". " + tasks.get(i) + "\n";
             }
         }
+
+        printWithBorder(message);
     }
 }

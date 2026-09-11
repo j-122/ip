@@ -37,7 +37,7 @@ public class TaskManager {
         return tasks.size();
     }
 
-    // Editing task or list of tasks
+
     public void addTask(Task task) {
         if (tasks.size() >= MAX_TASK_COUNT) {
             throw new InvalidTaskException("You have reached the limit on number of tasks.");
@@ -48,31 +48,26 @@ public class TaskManager {
         }
 
         tasks.add(task);
-
-        try {
-            fileManager.appendTaskToFile(task);
-        } catch (IOException e) {
-            Printer.printErrorMessage("Something wrong with file.");
-        }
+        applyFileChanges();
     }
 
     public Task deleteTask(int taskNumber) {
-        Task task = this.getTask(taskNumber);
-        tasks.remove(task);
+        Task task = getTask(taskNumber);
+        tasks.remove(taskNumber - 1);
 
         applyFileChanges();
         return task;
     }
 
     public void markTask(int taskNumber) {
-        Task task = this.getTask(taskNumber);
+        Task task = getTask(taskNumber);
         task.markAsDone();
 
         applyFileChanges();
     }
 
     public void unmarkTask(int taskNumber) {
-        Task task = this.getTask(taskNumber);
+        Task task = getTask(taskNumber);
         task.markAsNotDone();
 
         applyFileChanges();

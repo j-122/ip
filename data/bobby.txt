@@ -1,7 +1,4 @@
-T | 1 | wdd
-T | 0 | fwfw
-D | 0 | wfw | wffe
+T | 0 | make ric
+T | 1 | fwfw
 T | 0 | fwf
-D | 1 | wfw | wfwfw
-T | 0 | wew
-D | 0 | wfwf | wfwf
+E | 0 | wewe | ewgfwe | wefwef w

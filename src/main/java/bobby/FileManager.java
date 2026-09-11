@@ -41,25 +41,25 @@ public class FileManager {
     public void loadFile(ArrayList<Task> tasks)  {
         File file = new File(FILE_PATH);
         try {
-            readFileContents(file, tasks);
+            readFileContentsIntoTaskList(file, tasks);
         } catch (FileNotFoundException e) {
             Printer.printErrorMessage("File not found.");
         }
     }
 
-    private void readFileContents(File file, ArrayList<Task> tasks) throws FileNotFoundException {
+    private void readFileContentsIntoTaskList(File file, ArrayList<Task> tasks) throws FileNotFoundException {
         Scanner scanner = new Scanner(file);
         while (scanner.hasNextLine()) {
             tasks.add(convertLineToTask(scanner.nextLine()));
         }
     }
 
-    public void appendTaskToFile(Task task) throws IOException {
-        FileWriter fw = new FileWriter(FILE_PATH, true);
-        fw.write(convertTaskToFileFormat(task));
-
-        fw.close();
-    }
+//    public void appendTaskToFile(Task task) throws IOException {
+//        FileWriter fw = new FileWriter(FILE_PATH, true);
+//        fw.write(convertTaskToFileFormat(task));
+//
+//        fw.close();
+//    }
 
     public void saveFile(ArrayList<Task> tasks) throws IOException {
         FileWriter fw = new FileWriter(FILE_PATH);
@@ -71,9 +71,13 @@ public class FileManager {
     }
 
 
+    // Format conversion
     private Task convertLineToTask(String line) {
         String[] args = line.split(" \\| ");
         boolean isDone = args[1].equals("1");
+        /*
+            Need to add error handling here soon
+         */
         Task task = null;
 
         switch (args[0]) {
