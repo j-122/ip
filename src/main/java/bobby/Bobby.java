@@ -25,7 +25,9 @@ public class Bobby {
 
     public static void main(String[] args) {
         greetUser();
+        //loadTaskList();
         beginInputProcessing();
+        //saveTaskList();
         sayGoodbye();
     }
 
@@ -105,6 +107,7 @@ public class Bobby {
         task.markAsDone();
 
         System.out.println("Good, this task is done: " + task);
+        taskManager.applyFileChanges();
     }
 
     private static void handleTaskUnmarking(String[] args) {
@@ -113,6 +116,7 @@ public class Bobby {
         task.markAsNotDone();
 
         System.out.println("Okay, this task is not done: " + task);
+        taskManager.applyFileChanges();
     }
 
     private static void handleTaskDeletion(String[] args) {

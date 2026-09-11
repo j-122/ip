@@ -5,13 +5,19 @@ import bobby.exception.TaskNotFoundException;
 import bobby.task.Task;
 
 import java.util.ArrayList;
+import java.io.IOException;
 
 public class TaskManager {
     private static final int MAX_TASK_COUNT = 100;
     private ArrayList<Task> tasks;
 
+    private FileManager fileManager;
+
     TaskManager() {
         tasks = new ArrayList<>();
+        fileManager = new FileManager();
+
+        fileManager.loadFile(tasks);
     }
 
     public Task getTask(int taskNumber) {
@@ -37,6 +43,12 @@ public class TaskManager {
 
         tasks.add(task);
         System.out.println("added: \n\t" + task + "\nYou now have " + tasks.size() + " pending tasks.");
+
+        try {
+            fileManager.addTaskToFile(task);
+        } catch (IOException e) {
+            System.out.println("ERROR: Something wrong with file.");
+        }
     }
 
     public void deleteTask(int taskNumber) {
@@ -45,6 +57,15 @@ public class TaskManager {
 
         System.out.println("removed: \n\t" + task + "\nYou now have " + tasks.size() + " pending tasks.");
 
+        applyFileChanges();
+    }
+
+    public void applyFileChanges() {
+        try {
+            fileManager.saveFile(tasks);
+        } catch (IOException e) {
+            System.out.println("ERROR: Something wrong with file.");
+        }
     }
 
     public void printTaskList() {
