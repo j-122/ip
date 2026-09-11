@@ -16,6 +16,8 @@ public class Bobby {
     private static final String LIST_COMMAND = "list";
     private static final String MARK_COMMAND = "mark";
     private static final String UNMARK_COMMAND = "unmark";
+    private static final String DELETE_COMMAND = "delete";
+
     private static final String TODO_KEYWORD = "todo";
     private static final String DEADLINE_KEYWORD = "deadline";
     private static final String EVENT_KEYWORD = "event";
@@ -49,7 +51,6 @@ public class Bobby {
         System.out.println("ERROR: " + message);
     }
 
-
     private static void beginInputProcessing() {
         taskManager = new TaskManager();
         Scanner scanner = new Scanner(System.in);
@@ -79,6 +80,7 @@ public class Bobby {
                 case LIST_COMMAND -> showAllTasks();
                 case MARK_COMMAND -> handleTaskMarking(arguments);
                 case UNMARK_COMMAND -> handleTaskUnmarking(arguments);
+                case DELETE_COMMAND -> handleTaskDeletion(arguments);
                 case TODO_KEYWORD -> addTodo(arguments);
                 case DEADLINE_KEYWORD -> addDeadline(arguments);
                 case EVENT_KEYWORD -> addEvent(arguments);
@@ -98,19 +100,24 @@ public class Bobby {
     }
 
     private static void handleTaskMarking(String[] args) {
-        int taskIndex = getTaskNumber(args);
-        Task task = taskManager.getTask(taskIndex);
+        int taskNumber = getTaskNumber(args);
+        Task task = taskManager.getTask(taskNumber);
         task.markAsDone();
 
         System.out.println("Good, this task is done: " + task);
     }
 
     private static void handleTaskUnmarking(String[] args) {
-        int taskIndex = getTaskNumber(args);
-        Task task = taskManager.getTask(taskIndex);
+        int taskNumber = getTaskNumber(args);
+        Task task = taskManager.getTask(taskNumber);
         task.markAsNotDone();
 
         System.out.println("Okay, this task is not done: " + task);
+    }
+
+    private static void handleTaskDeletion(String[] args) {
+        int taskNumber = getTaskNumber(args);
+        taskManager.deleteTask(taskNumber);
     }
 
     private static int getTaskNumber(String[] args) {
@@ -120,7 +127,6 @@ public class Bobby {
 
         return Integer.parseInt(args[1].strip());
     }
-
 
     private static void addTodo(String[] args) {
         if (args.length != 2) {
