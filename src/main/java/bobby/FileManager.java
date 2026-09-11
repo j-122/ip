@@ -6,11 +6,12 @@ import bobby.task.Task;
 import bobby.task.Todo;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Scanner;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.FileNotFoundException;
+
+import java.util.ArrayList;
+import java.util.Scanner;
 
 
 public class FileManager {
@@ -21,31 +22,28 @@ public class FileManager {
         try {
             createFileIfNeeded();
         } catch (IOException e) {
-            System.out.println("ERROR: Unable to create data file.");
+            Printer.printErrorMessage("Unable to create data file.");
         }
     }
 
     private void createFileIfNeeded() throws IOException {
         File directory = new File(DIR_PATH);
-
         if (!directory.exists()) {
             directory.mkdirs();
         }
 
         File file = new File(FILE_PATH);
-
         if (!file.exists()) {
             file.createNewFile();
         }
     }
-
 
     public void loadFile(ArrayList<Task> tasks)  {
         File file = new File(FILE_PATH);
         try {
             readFileContents(file, tasks);
         } catch (FileNotFoundException e) {
-            System.out.println("ERROR: File not found.");
+            Printer.printErrorMessage("File not found.");
         }
     }
 
@@ -56,9 +54,10 @@ public class FileManager {
         }
     }
 
-    public void addTaskToFile(Task task) throws IOException {
+    public void appendTaskToFile(Task task) throws IOException {
         FileWriter fw = new FileWriter(FILE_PATH, true);
         fw.write(convertTaskToFileFormat(task));
+
         fw.close();
     }
 
@@ -81,7 +80,7 @@ public class FileManager {
             case "T" -> task = new Todo(args[2], isDone);
             case "D" -> task = new Deadline(args[2], isDone, args[3]);
             case "E" -> task = new Event(args[2], isDone, args[3], args[4]);
-            default -> System.out.println("ERROR: This line cannot be converted to a task.");
+            default -> Printer.printErrorMessage("This line cannot be converted to a task.");
         }
 
         return task;
@@ -90,27 +89,27 @@ public class FileManager {
     private String convertTaskToFileFormat(Task task) {
         int status = (task.getStatus())? 1 : 0;
         String statusAndDescription = " | " + status + " | " + task.getTaskDescription();
+        String line = "";
 
         if (task instanceof Todo) {
-            return "T"
-                    + statusAndDescription
-                    + System.lineSeparator();
+            line = "T"
+                    + statusAndDescription;
         } else if (task instanceof Deadline deadline) {
-            return "D"
+            line = "D"
                     + statusAndDescription
                     + " | "
-                    + deadline.getBy()
-                    + System.lineSeparator();
+                    + deadline.getBy();
         } else if (task instanceof Event event) {
-            return "E"
+            line = "E"
                     + statusAndDescription
                     + " | "
                     + event.getStart()
                     + " | "
-                    + event.getEnd()
-                    + System.lineSeparator();
+                    + event.getEnd();
+        } else {
+            Printer.printErrorMessage("Unable to convert task to file format");
         }
 
-        return "";
+        return line + System.lineSeparator();
     }
 }

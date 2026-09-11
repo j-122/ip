@@ -25,32 +25,18 @@ public class Bobby {
 
     public static void main(String[] args) {
         greetUser();
-        //loadTaskList();
         beginInputProcessing();
-        //saveTaskList();
         sayGoodbye();
     }
 
 
     private static void greetUser() {
-        System.out.println(" ____        _     _           \n"
-                + "| __ )  ___ | |__ | |__  _   _ \n"
-                + "|  _ \\ / _ \\| '_ \\| '_ \\| | | |\n"
-                + "| |_) | (_) | |_) | |_) | |_| |\n"
-                + "|____/ \\___/|_.__/|_.__/ \\__, |\n"
-                + "                         |___/ \n"
-                + "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
-                + "Hi! I'm Bobby.\n"
-                + "What can I do for you?\n"
-                + "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+        Printer.printBanner();
+        Printer.printWelcomeMessage();
     }
 
     private static void sayGoodbye() {
-        System.out.println("Bye Bye!");
-    }
-
-    private static void printErrorMessage(String message) {
-        System.out.println("ERROR: " + message);
+        Printer.printGoodbyeMessage();
     }
 
     private static void beginInputProcessing() {
@@ -70,7 +56,7 @@ public class Bobby {
         boolean isRunning = true;
 
         if (inputLine == null || inputLine.isBlank()) {
-            System.out.println("ERROR: No command received. Please enter a command.");
+            Printer.printErrorMessage("No command received. Please enter a command.");
             return isRunning;
         }
 
@@ -86,42 +72,40 @@ public class Bobby {
                 case TODO_KEYWORD -> addTodo(arguments);
                 case DEADLINE_KEYWORD -> addDeadline(arguments);
                 case EVENT_KEYWORD -> addEvent(arguments);
-                default -> printErrorMessage("No such command. Try again.");
+                default -> Printer.printErrorMessage("No such command. Try again.");
             }
         } catch (NumberFormatException e) {
-            printErrorMessage("Task number must a valid number...");
+            Printer.printErrorMessage("Task number must a valid number...");
         } catch (TaskNotFoundException | InvalidTaskException e) {
-            printErrorMessage(e.getMessage());
+            Printer.printErrorMessage(e.getMessage());
         }
 
         return isRunning;
     }
 
     private static void showAllTasks() {
-        taskManager.printTaskList();
+        Printer.printTaskList(taskManager.getTasks());
     }
 
     private static void handleTaskMarking(String[] args) {
         int taskNumber = getTaskNumber(args);
-        Task task = taskManager.getTask(taskNumber);
-        task.markAsDone();
+        taskManager.markTask(taskNumber);
 
-        System.out.println("Good, this task is done: " + task);
-        taskManager.applyFileChanges();
+        Printer.printMarkedTask(taskManager.getTask(taskNumber));
     }
 
     private static void handleTaskUnmarking(String[] args) {
         int taskNumber = getTaskNumber(args);
-        Task task = taskManager.getTask(taskNumber);
-        task.markAsNotDone();
+        taskManager.unmarkTask(taskNumber);
 
-        System.out.println("Okay, this task is not done: " + task);
-        taskManager.applyFileChanges();
+        Printer.printUnmarkedTask(taskManager.getTask(taskNumber));
     }
 
     private static void handleTaskDeletion(String[] args) {
         int taskNumber = getTaskNumber(args);
-        taskManager.deleteTask(taskNumber);
+        Task task = taskManager.deleteTask(taskNumber);
+
+        Printer.printDeletedTask(task, taskManager.getTaskCount());
     }
 
     private static int getTaskNumber(String[] args) {
@@ -137,7 +121,10 @@ public class Bobby {
             throw new InvalidTaskException("Task description is missing...");
         }
 
-        taskManager.addTask(new Todo(args[1].strip()));
+        Task task = new Todo(args[1].strip());
+        taskManager.addTask(task);
+
+        Printer.printAddedTask(task, taskManager.getTaskCount());
     }
 
     private static void addDeadline(String[] args) {
@@ -150,7 +137,10 @@ public class Bobby {
             throw new InvalidTaskException("Task is missing a deadline. Format: <description> /<deadline>");
         }
 
-        taskManager.addTask(new Deadline(contents[0].strip(), contents[1].strip()));
+        Task task = new Deadline(contents[0].strip(), contents[1].strip());
+        taskManager.addTask(task);
+
+        Printer.printAddedTask(task, taskManager.getTaskCount());
     }
 
     private static void addEvent(String[] args) {
@@ -163,6 +153,9 @@ public class Bobby {
             throw new InvalidTaskException("Task is missing a timeframe. Format: <description> /<start> /<end>");
         }
 
-        taskManager.addTask(new Event(contents[0].strip(), contents[1].strip(), contents[2].strip()));
+        Task task = new Event(contents[0].strip(), contents[1].strip(), contents[2].strip());
+        taskManager.addTask(task);
+
+        Printer.printAddedTask(task, taskManager.getTaskCount());
     }
 }

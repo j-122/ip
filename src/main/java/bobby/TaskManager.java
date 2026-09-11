@@ -20,6 +20,11 @@ public class TaskManager {
         fileManager.loadFile(tasks);
     }
 
+    // Getters
+    public ArrayList<Task> getTasks() {
+        return tasks;
+    }
+
     public Task getTask(int taskNumber) {
         if (taskNumber < 1 || taskNumber > tasks.size()) {
             throw new TaskNotFoundException("You have " + tasks.size() + " tasks. Please pick within the limits...");
@@ -32,6 +37,7 @@ public class TaskManager {
         return tasks.size();
     }
 
+    // Editing task or list of tasks
     public void addTask(Task task) {
         if (tasks.size() >= MAX_TASK_COUNT) {
             throw new InvalidTaskException("You have reached the limit on number of tasks.");
@@ -42,40 +48,42 @@ public class TaskManager {
         }
 
         tasks.add(task);
-        System.out.println("added: \n\t" + task + "\nYou now have " + tasks.size() + " pending tasks.");
 
         try {
-            fileManager.addTaskToFile(task);
+            fileManager.appendTaskToFile(task);
         } catch (IOException e) {
-            System.out.println("ERROR: Something wrong with file.");
+            Printer.printErrorMessage("Something wrong with file.");
         }
     }
 
-    public void deleteTask(int taskNumber) {
+    public Task deleteTask(int taskNumber) {
         Task task = this.getTask(taskNumber);
         tasks.remove(task);
 
-        System.out.println("removed: \n\t" + task + "\nYou now have " + tasks.size() + " pending tasks.");
+        applyFileChanges();
+        return task;
+    }
+
+    public void markTask(int taskNumber) {
+        Task task = this.getTask(taskNumber);
+        task.markAsDone();
 
         applyFileChanges();
     }
 
+    public void unmarkTask(int taskNumber) {
+        Task task = this.getTask(taskNumber);
+        task.markAsNotDone();
+
+        applyFileChanges();
+    }
+
+    // Sync file with task list
     public void applyFileChanges() {
         try {
             fileManager.saveFile(tasks);
         } catch (IOException e) {
-            System.out.println("ERROR: Something wrong with file.");
-        }
-    }
-
-    public void printTaskList() {
-        if (tasks.isEmpty()) {
-            System.out.println("So empty...");
-        } else {
-            System.out.println("Here are your tasks:");
-            for (int i = 0; i < tasks.size(); i++) {
-                System.out.println("\t" + (i + 1) + ". " + tasks.get(i));
-            }
+            Printer.printErrorMessage("Something wrong with file.");
         }
     }
 }
