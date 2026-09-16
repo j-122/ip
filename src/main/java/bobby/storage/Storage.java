@@ -1,5 +1,6 @@
-package bobby;
+package bobby.storage;
 
+import bobby.printer.Printer;
 import bobby.task.Deadline;
 import bobby.task.Event;
 import bobby.task.Task;
@@ -14,11 +15,11 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 
-public class FileManager {
+public class Storage {
     private static final String FILE_PATH = "./data/bobby.txt";
     private static final String DIR_PATH = "./data";
 
-    public FileManager() {
+    public Storage() {
         try {
             createFileIfNeeded();
         } catch (IOException e) {
@@ -53,13 +54,6 @@ public class FileManager {
             tasks.add(convertLineToTask(scanner.nextLine()));
         }
     }
-
-//    public void appendTaskToFile(Task task) throws IOException {
-//        FileWriter fw = new FileWriter(FILE_PATH, true);
-//        fw.write(convertTaskToFileFormat(task));
-//
-//        fw.close();
-//    }
 
     public void saveFile(ArrayList<Task> tasks) throws IOException {
         FileWriter fw = new FileWriter(FILE_PATH);

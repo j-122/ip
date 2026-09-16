@@ -1,4 +1,4 @@
-package bobby;
+package bobby.printer;
 
 import bobby.task.Task;
 

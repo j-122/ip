@@ -2,3 +2,4 @@ T | 0 | make ric
 T | 1 | fwfw
 T | 0 | fwf
 E | 0 | wewe | ewgfwe | wefwef w
+T | 0 | wew

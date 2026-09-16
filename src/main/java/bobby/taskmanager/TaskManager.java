@@ -1,5 +1,7 @@
-package bobby;
+package bobby.taskmanager;
 
+import bobby.storage.Storage;
+import bobby.printer.Printer;
 import bobby.exception.InvalidTaskException;
 import bobby.exception.TaskNotFoundException;
 import bobby.task.Task;
@@ -11,13 +13,13 @@ public class TaskManager {
     private static final int MAX_TASK_COUNT = 100;
     private ArrayList<Task> tasks;
 
-    private FileManager fileManager;
+    private Storage storage;
 
-    TaskManager() {
+    public TaskManager() {
         tasks = new ArrayList<>();
-        fileManager = new FileManager();
+        storage = new Storage();
 
-        fileManager.loadFile(tasks);
+        storage.loadFile(tasks);
     }
 
     // Getters
@@ -76,7 +78,7 @@ public class TaskManager {
     // Sync file with task list
     public void applyFileChanges() {
         try {
-            fileManager.saveFile(tasks);
+            storage.saveFile(tasks);
         } catch (IOException e) {
             Printer.printErrorMessage("Something wrong with file.");
         }
