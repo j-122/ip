@@ -2,6 +2,7 @@ package bobby;
 
 import bobby.exception.InvalidTaskException;
 import bobby.exception.TaskNotFoundException;
+import bobby.parser.Parser;
 import bobby.printer.Printer;
 import bobby.task.Deadline;
 import bobby.task.Event;
@@ -23,7 +24,6 @@ public class Bobby {
     private static final String TODO_KEYWORD = "todo";
     private static final String DEADLINE_KEYWORD = "deadline";
     private static final String EVENT_KEYWORD = "event";
-
 
     public static void main(String[] args) {
         greetUser();
@@ -63,10 +63,11 @@ public class Bobby {
             return isRunning;
         }
 
-        String[] arguments = inputLine.strip().split(" ", 2);
+        String command = Parser.getCommand(inputLine);
+        String arguments = Parser.getArguments(inputLine);
 
         try {
-            switch (arguments[0]) {
+            switch (command) {
                 case EXIT_COMMAND -> isRunning = false;
                 case LIST_COMMAND -> showAllTasks();
                 case MARK_COMMAND -> handleTaskMarking(arguments);
@@ -90,70 +91,42 @@ public class Bobby {
         Printer.printTaskList(taskManager.getTasks());
     }
 
-    private static int getTaskNumber(String[] args) {
-        if (args.length != 2) {
-            throw new TaskNotFoundException("Task number is missing...");
-        }
-
-        return Integer.parseInt(args[1].strip());
-    }
-
-    private static void handleTaskMarking(String[] args) {
-        int taskNumber = getTaskNumber(args);
+    private static void handleTaskMarking(String number) {
+        int taskNumber = Parser.getTaskNumber(number);
         taskManager.markTask(taskNumber);
 
         Printer.printMarkedTask(taskManager.getTask(taskNumber));
     }
 
-    private static void handleTaskUnmarking(String[] args) {
-        int taskNumber = getTaskNumber(args);
+    private static void handleTaskUnmarking(String number) {
+        int taskNumber = Parser.getTaskNumber(number);
         taskManager.unmarkTask(taskNumber);
 
         Printer.printUnmarkedTask(taskManager.getTask(taskNumber));
     }
 
-    private static void handleTaskDeletion(String[] args) {
-        int taskNumber = getTaskNumber(args);
+    private static void handleTaskDeletion(String number) {
+        int taskNumber = Parser.getTaskNumber(number);
         Task deletedTask = taskManager.deleteTask(taskNumber);
 
         Printer.printDeletedTask(deletedTask, taskManager.getTaskCount());
     }
 
 
-
-    private static void addTodo(String[] args) {
-        if (args.length != 2) {
-            throw new InvalidTaskException("Task description is missing...");
-        }
-
-        registerTask(new Todo(args[1].strip()));
+    private static void addTodo(String args) {
+        Todo todo = Parser.parseTodo(args);
+        registerTask(todo);
     }
 
-    private static void addDeadline(String[] args) {
-        if (args.length != 2) {
-            throw new InvalidTaskException("Task description is missing...");
-        }
-
-        String[] contents = args[1].split("/", 2);
-        if (contents.length != 2) {
-            throw new InvalidTaskException("Task is missing a deadline. Format: <description> /<deadline>");
-        }
-
-        registerTask(new Deadline(contents[0].strip(), contents[1].strip()));
+    private static void addDeadline(String args) {
+        Deadline deadline = Parser.parseDeadline(args);
+        registerTask(deadline);
     }
 
 
-    private static void addEvent(String[] args) {
-        if (args.length != 2) {
-            throw new InvalidTaskException("Task description is missing...");
-        }
-
-        String[] contents = args[1].split("/", 3);
-        if (contents.length != 3) {
-            throw new InvalidTaskException("Task is missing a timeframe. Format: <description> /<start> /<end>");
-        }
-
-        registerTask(new Event(contents[0].strip(), contents[1].strip(), contents[2].strip()));
+    private static void addEvent(String args) {
+        Event event = Parser.parseEvent(args);
+        registerTask(event);
     }
 
     private static void registerTask(Task task) {
