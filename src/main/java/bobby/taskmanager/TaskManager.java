@@ -1,7 +1,7 @@
 package bobby.taskmanager;
 
 import bobby.storage.Storage;
-import bobby.printer.Printer;
+import bobby.ui.Ui;
 import bobby.exception.InvalidTaskException;
 import bobby.exception.TaskNotFoundException;
 import bobby.task.Task;
@@ -17,7 +17,6 @@ public class TaskManager {
 
     public TaskManager() {
         tasks = new ArrayList<>();
-        storage = new Storage();
 
         storage.loadFile(tasks);
     }
@@ -80,7 +79,7 @@ public class TaskManager {
         try {
             storage.saveFile(tasks);
         } catch (IOException e) {
-            Printer.printErrorMessage("Something wrong with file.");
+            ui.printErrorMessage("Something wrong with file.");
         }
     }
 }

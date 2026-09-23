@@ -1,6 +1,6 @@
 package bobby.storage;
 
-import bobby.printer.Printer;
+import bobby.ui.Ui;
 import bobby.task.Deadline;
 import bobby.task.Event;
 import bobby.task.Task;
@@ -23,7 +23,7 @@ public class Storage {
         try {
             createFileIfNeeded();
         } catch (IOException e) {
-            Printer.printErrorMessage("Unable to create data file.");
+            Ui.printErrorMessage("Unable to create data file.");
         }
     }
 
@@ -44,7 +44,7 @@ public class Storage {
         try {
             readFileContentsIntoTaskList(file, tasks);
         } catch (FileNotFoundException e) {
-            Printer.printErrorMessage("File not found.");
+            Ui.printErrorMessage("File not found.");
         }
     }
 
@@ -78,7 +78,7 @@ public class Storage {
             case "T" -> task = new Todo(args[2], isDone);
             case "D" -> task = new Deadline(args[2], isDone, args[3]);
             case "E" -> task = new Event(args[2], isDone, args[3], args[4]);
-            default -> Printer.printErrorMessage("This line cannot be converted to a task.");
+            default -> Ui.printErrorMessage("This line cannot be converted to a task.");
         }
 
         return task;
@@ -105,7 +105,7 @@ public class Storage {
                     + " | "
                     + event.getEnd();
         } else {
-            Printer.printErrorMessage("Unable to convert task to file format");
+            Ui.printErrorMessage("Unable to convert task to file format");
         }
 
         return line + System.lineSeparator();

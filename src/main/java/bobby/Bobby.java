@@ -3,17 +3,19 @@ package bobby;
 import bobby.exception.InvalidTaskException;
 import bobby.exception.TaskNotFoundException;
 import bobby.parser.Parser;
-import bobby.printer.Printer;
+import bobby.storage.Storage;
+import bobby.ui.Ui;
 import bobby.task.Deadline;
 import bobby.task.Event;
 import bobby.task.Task;
 import bobby.task.Todo;
 import bobby.taskmanager.TaskManager;
 
-import java.util.Scanner;
 
 public class Bobby {
     private static TaskManager taskManager;
+    private static Ui ui;
+    private static Storage storage;
 
     private static final String EXIT_COMMAND = "bye";
     private static final String LIST_COMMAND = "list";
@@ -25,41 +27,48 @@ public class Bobby {
     private static final String DEADLINE_KEYWORD = "deadline";
     private static final String EVENT_KEYWORD = "event";
 
-    public static void main(String[] args) {
+    public Bobby(String filePath) {
+        ui = new Ui();
+        storage = new Storage(filePath);
+        try {
+            tasksManager = new TaskManager(storage.load());
+        } catch (DukeException e) {
+            ui.showLoadingError();
+            task = new TaskList();
+        }
+    }
+
+    public void run() {
         greetUser();
-        beginInputProcessing();
+
+        boolean isRunning = true;
+        while (isRunning) {
+            String inputLine = ui.getInput();
+            isRunning = handleInput(inputLine);
+        }
+
         sayGoodbye();
+    }
+
+    public static void main(String[] args) {
+        new Bobby("data/tasks.txt").run();
     }
 
 
     private static void greetUser() {
-        Printer.printBanner();
-        Printer.printWelcomeMessage();
+        ui.showBanner();
+        ui.showWelcomeMessage();
     }
 
-    private static void sayGoodbye() {
-        Printer.printGoodbyeMessage();
+    private void sayGoodbye() {
+        ui.showGoodbyeMessage();
     }
 
-
-    private static void beginInputProcessing() {
-        taskManager = new TaskManager();
-        Scanner scanner = new Scanner(System.in);
-
-        String inputLine;
-        boolean isRunning = true;
-
-        while (isRunning) {
-            inputLine = scanner.nextLine();
-            isRunning = handleInput(inputLine);
-        }
-    }
-
-    private static boolean handleInput(String inputLine) {
+    private boolean handleInput(String inputLine) {
         boolean isRunning = true;
 
         if (inputLine.isBlank()) {
-            Printer.printErrorMessage("No command received. Please enter a command.");
+            ui.showErrorMessage("No command received. Please enter a command.");
             return isRunning;
         }
 
@@ -76,40 +85,40 @@ public class Bobby {
                 case TODO_KEYWORD -> addTodo(arguments);
                 case DEADLINE_KEYWORD -> addDeadline(arguments);
                 case EVENT_KEYWORD -> addEvent(arguments);
-                default -> Printer.printErrorMessage("No such command. Try again.");
+                default -> ui.showErrorMessage("No such command. Try again.");
             }
         } catch (NumberFormatException e) {
-            Printer.printErrorMessage("Task number must a valid number...");
+            ui.showErrorMessage("Task number must a valid number...");
         } catch (TaskNotFoundException | InvalidTaskException e) {
-            Printer.printErrorMessage(e.getMessage());
+            ui.showErrorMessage(e.getMessage());
         }
 
         return isRunning;
     }
 
     private static void showAllTasks() {
-        Printer.printTaskList(taskManager.getTasks());
+        ui.showTaskList(taskManager.getTasks());
     }
 
     private static void handleTaskMarking(String number) {
         int taskNumber = Parser.getTaskNumber(number);
         taskManager.markTask(taskNumber);
 
-        Printer.printMarkedTask(taskManager.getTask(taskNumber));
+        ui.showMarkedTask(taskManager.getTask(taskNumber));
     }
 
     private static void handleTaskUnmarking(String number) {
         int taskNumber = Parser.getTaskNumber(number);
         taskManager.unmarkTask(taskNumber);
 
-        Printer.printUnmarkedTask(taskManager.getTask(taskNumber));
+        ui.showUnmarkedTask(taskManager.getTask(taskNumber));
     }
 
     private static void handleTaskDeletion(String number) {
         int taskNumber = Parser.getTaskNumber(number);
         Task deletedTask = taskManager.deleteTask(taskNumber);
 
-        Printer.printDeletedTask(deletedTask, taskManager.getTaskCount());
+        ui.showDeletedTask(deletedTask, taskManager.getTaskCount());
     }
 
 
@@ -131,6 +140,6 @@ public class Bobby {
 
     private static void registerTask(Task task) {
         taskManager.addTask(task);
-        Printer.printAddedTask(task, taskManager.getTaskCount());
+        ui.showAddedTask(task, taskManager.getTaskCount());
     }
 }

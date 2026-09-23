@@ -1,23 +1,33 @@
-package bobby.printer;
+package bobby.ui;
 
 import bobby.task.Task;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 
-public class Printer {
+public class Ui {
+    private final Scanner scanner;
     private static final String BORDER = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
 
-    private static void printWithBorder(String message) {
+    public Ui() {
+        scanner = new Scanner(System.in);
+    }
+
+    public String getInput() {
+        return scanner.nextLine();
+    }
+
+    private void printWithBorder(String message) {
         System.out.println(BORDER);
         System.out.println(indented(message));
         System.out.println(BORDER);
     }
 
-    private static String indented(String message) {
+    private String indented(String message) {
         return "\t" + message.replace("\n", "\n\t");
     }
 
-    public static void printBanner() {
+    public void showBanner() {
         System.out.println(
                   " ____        _     _           \n"
                 + "| __ )  ___ | |__ | |__  _   _ \n"
@@ -28,37 +38,37 @@ public class Printer {
         );
     }
 
-    public static void printWelcomeMessage() {
+    public void showWelcomeMessage() {
         printWithBorder("Hi! I'm Bobby.\nWhat can I do for you?\n");
     }
 
-    public static void printGoodbyeMessage() {
+    public void showGoodbyeMessage() {
         printWithBorder("Bye Bye!");
     }
 
-    public static void printErrorMessage(String message) {
+    public void showErrorMessage(String message) {
         printWithBorder("ERROR: " + message);
     }
 
-    public static void printMarkedTask(Task task) {
+    public void showMarkedTask(Task task) {
         printWithBorder("Good, this task is done: " + task);
     }
 
-    public static void printUnmarkedTask(Task task) {
+    public void showUnmarkedTask(Task task) {
         printWithBorder("Okay, this task is not done: " + task);
     }
 
-    public static void printAddedTask(Task task, int taskCount) {
+    public void showAddedTask(Task task, int taskCount) {
         printWithBorder("added: \n\t" + task
                 + "\nYou now have " + taskCount + " pending tasks.");
     }
 
-    public static void printDeletedTask(Task task, int taskCount) {
+    public void showDeletedTask(Task task, int taskCount) {
         printWithBorder("removed: \n\t" + task
                 + "\nYou now have " + taskCount + " pending tasks.");
     }
 
-    public static void printTaskList(ArrayList<Task> tasks) {
+    public void showTaskList(ArrayList<Task> tasks) {
         String message;
         if (tasks.isEmpty()) {
             message = "So empty...";
