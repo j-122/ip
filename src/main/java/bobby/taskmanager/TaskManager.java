@@ -13,12 +13,12 @@ public class TaskManager {
     private static final int MAX_TASK_COUNT = 100;
     private ArrayList<Task> tasks;
 
-    private Storage storage;
-
     public TaskManager() {
-        tasks = new ArrayList<>();
+        this(new ArrayList<>());
+    }
 
-        storage.loadFile(tasks);
+    public TaskManager(ArrayList<Task> tasks) {
+        this.tasks = tasks;
     }
 
     // Getters
@@ -38,7 +38,6 @@ public class TaskManager {
         return tasks.size();
     }
 
-
     public void addTask(Task task) {
         if (tasks.size() >= MAX_TASK_COUNT) {
             throw new InvalidTaskException("You have reached the limit on number of tasks.");
@@ -49,37 +48,22 @@ public class TaskManager {
         }
 
         tasks.add(task);
-        applyFileChanges();
     }
 
     public Task deleteTask(int taskNumber) {
         Task task = getTask(taskNumber);
         tasks.remove(taskNumber - 1);
 
-        applyFileChanges();
         return task;
     }
 
     public void markTask(int taskNumber) {
         Task task = getTask(taskNumber);
         task.markAsDone();
-
-        applyFileChanges();
     }
 
     public void unmarkTask(int taskNumber) {
         Task task = getTask(taskNumber);
         task.markAsNotDone();
-
-        applyFileChanges();
-    }
-
-    // Sync file with task list
-    public void applyFileChanges() {
-        try {
-            storage.saveFile(tasks);
-        } catch (IOException e) {
-            ui.printErrorMessage("Something wrong with file.");
-        }
     }
 }

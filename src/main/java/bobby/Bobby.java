@@ -1,6 +1,8 @@
 package bobby;
 
+import bobby.exception.BobbyException;
 import bobby.exception.InvalidTaskException;
+import bobby.exception.StorageException;
 import bobby.exception.TaskNotFoundException;
 import bobby.parser.Parser;
 import bobby.storage.Storage;
@@ -11,11 +13,13 @@ import bobby.task.Task;
 import bobby.task.Todo;
 import bobby.taskmanager.TaskManager;
 
+import java.io.IOException;
+
 
 public class Bobby {
-    private static TaskManager taskManager;
-    private static Ui ui;
-    private static Storage storage;
+    private TaskManager taskManager;
+    private Ui ui;
+    private Storage storage;
 
     private static final String EXIT_COMMAND = "bye";
     private static final String LIST_COMMAND = "list";
@@ -30,11 +34,12 @@ public class Bobby {
     public Bobby(String filePath) {
         ui = new Ui();
         storage = new Storage(filePath);
+
         try {
-            tasksManager = new TaskManager(storage.load());
-        } catch (DukeException e) {
-            ui.showLoadingError();
-            task = new TaskList();
+            taskManager = new TaskManager(storage.loadFile());
+        } catch (StorageException e) {
+            ui.showErrorMessage(e.getMessage());
+            taskManager = new TaskManager();
         }
     }
 
@@ -55,7 +60,7 @@ public class Bobby {
     }
 
 
-    private static void greetUser() {
+    private void greetUser() {
         ui.showBanner();
         ui.showWelcomeMessage();
     }
@@ -96,50 +101,62 @@ public class Bobby {
         return isRunning;
     }
 
-    private static void showAllTasks() {
+    private void showAllTasks() {
         ui.showTaskList(taskManager.getTasks());
     }
 
-    private static void handleTaskMarking(String number) {
+    private void handleTaskMarking(String number) {
         int taskNumber = Parser.getTaskNumber(number);
         taskManager.markTask(taskNumber);
 
         ui.showMarkedTask(taskManager.getTask(taskNumber));
+        applyFileChanges();
     }
 
-    private static void handleTaskUnmarking(String number) {
+    private void handleTaskUnmarking(String number) {
         int taskNumber = Parser.getTaskNumber(number);
         taskManager.unmarkTask(taskNumber);
 
         ui.showUnmarkedTask(taskManager.getTask(taskNumber));
+        applyFileChanges();
     }
 
-    private static void handleTaskDeletion(String number) {
+    private void handleTaskDeletion(String number) {
         int taskNumber = Parser.getTaskNumber(number);
         Task deletedTask = taskManager.deleteTask(taskNumber);
 
         ui.showDeletedTask(deletedTask, taskManager.getTaskCount());
+        applyFileChanges();
     }
 
 
-    private static void addTodo(String args) {
+    private void addTodo(String args) {
         Todo todo = Parser.parseTodo(args);
         registerTask(todo);
     }
 
-    private static void addDeadline(String args) {
+    private void addDeadline(String args) {
         Deadline deadline = Parser.parseDeadline(args);
         registerTask(deadline);
     }
 
 
-    private static void addEvent(String args) {
+    private void addEvent(String args) {
         Event event = Parser.parseEvent(args);
         registerTask(event);
     }
 
-    private static void registerTask(Task task) {
+    private void registerTask(Task task) {
         taskManager.addTask(task);
         ui.showAddedTask(task, taskManager.getTaskCount());
+        applyFileChanges();
+    }
+
+    private void applyFileChanges() {
+        try {
+            storage.saveFile(taskManager.getTasks());
+        } catch (IOException e) {
+            ui.showErrorMessage("Something happened while saving file.");
+        }
     }
 }

@@ -1,6 +1,6 @@
 package bobby.storage;
 
-import bobby.ui.Ui;
+import bobby.exception.StorageException;
 import bobby.task.Deadline;
 import bobby.task.Event;
 import bobby.task.Task;
@@ -16,36 +16,42 @@ import java.util.Scanner;
 
 
 public class Storage {
-    private static final String FILE_PATH = "./data/bobby.txt";
-    private static final String DIR_PATH = "./data";
+    private final String filePath;
 
-    public Storage() {
+    public Storage(String filePath) {
+        this.filePath = filePath;
+
         try {
             createFileIfNeeded();
         } catch (IOException e) {
-            Ui.printErrorMessage("Unable to create data file.");
+            throw new StorageException("Unable to create data file.");
         }
     }
 
     private void createFileIfNeeded() throws IOException {
-        File directory = new File(DIR_PATH);
-        if (!directory.exists()) {
-            directory.mkdirs();
+        File file = new File(filePath);
+        File parentFile = file.getParentFile();
+
+        if (parentFile != null && !parentFile.exists()) {
+            parentFile.mkdirs();
         }
 
-        File file = new File(FILE_PATH);
         if (!file.exists()) {
             file.createNewFile();
         }
     }
 
-    public void loadFile(ArrayList<Task> tasks)  {
-        File file = new File(FILE_PATH);
+    public ArrayList<Task> loadFile()  {
+        File file = new File(filePath);
+        ArrayList<Task> tasks = new ArrayList<>();
+
         try {
             readFileContentsIntoTaskList(file, tasks);
         } catch (FileNotFoundException e) {
-            Ui.printErrorMessage("File not found.");
+            throw new StorageException("File not found.");
         }
+
+        return tasks;
     }
 
     private void readFileContentsIntoTaskList(File file, ArrayList<Task> tasks) throws FileNotFoundException {
@@ -56,7 +62,7 @@ public class Storage {
     }
 
     public void saveFile(ArrayList<Task> tasks) throws IOException {
-        FileWriter fw = new FileWriter(FILE_PATH);
+        FileWriter fw = new FileWriter(filePath);
         for (Task task : tasks) {
             fw.write(convertTaskToFileFormat(task));
         }
@@ -78,7 +84,7 @@ public class Storage {
             case "T" -> task = new Todo(args[2], isDone);
             case "D" -> task = new Deadline(args[2], isDone, args[3]);
             case "E" -> task = new Event(args[2], isDone, args[3], args[4]);
-            default -> Ui.printErrorMessage("This line cannot be converted to a task.");
+            default -> throw new StorageException("This line cannot be converted to a task.");
         }
 
         return task;
@@ -87,7 +93,7 @@ public class Storage {
     private String convertTaskToFileFormat(Task task) {
         int status = (task.getStatus())? 1 : 0;
         String statusAndDescription = " | " + status + " | " + task.getTaskDescription();
-        String line = "";
+        String line;
 
         if (task instanceof Todo) {
             line = "T"
@@ -105,7 +111,7 @@ public class Storage {
                     + " | "
                     + event.getEnd();
         } else {
-            Ui.printErrorMessage("Unable to convert task to file format");
+            throw new StorageException("Unable to convert task to file format");
         }
 
         return line + System.lineSeparator();
