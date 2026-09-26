@@ -61,33 +61,50 @@ public class Storage {
         }
     }
 
-    public void saveFile(ArrayList<Task> tasks) throws IOException {
-        FileWriter fw = new FileWriter(filePath);
-        for (Task task : tasks) {
-            fw.write(convertTaskToFileFormat(task));
-        }
+    public void saveFile(ArrayList<Task> tasks) {
+        try {
+            FileWriter fw = new FileWriter(filePath);
+            for (Task task : tasks) {
+                fw.write(convertTaskToFileFormat(task));
+            }
 
-        fw.close();
+            fw.close();
+        } catch (IOException e) {
+            throw new StorageException("Something happened while saving file");
+        }
     }
 
 
     // Format conversion
     private Task convertLineToTask(String line) {
         String[] args = line.split(" \\| ");
-        boolean isDone = args[1].equals("1");
-        /*
-            Need to add error handling here soon
-         */
-        Task task = null;
+        Task task;
 
-        switch (args[0]) {
-            case "T" -> task = new Todo(args[2], isDone);
-            case "D" -> task = new Deadline(args[2], isDone, args[3]);
-            case "E" -> task = new Event(args[2], isDone, args[3], args[4]);
-            default -> throw new StorageException("This line cannot be converted to a task.");
+        try {
+            boolean isDone = checkStatus(args[1]);
+            switch (args[0]) {
+                case "T" -> task = new Todo(args[2], isDone);
+                case "D" -> task = new Deadline(args[2], isDone, args[3]);
+                case "E" -> task = new Event(args[2], isDone, args[3], args[4]);
+                default -> throw new StorageException("This line cannot be converted to a task.");
+            }
+        } catch (IndexOutOfBoundsException e) {
+            throw new StorageException("Storage file contains invalid task data");
         }
 
         return task;
+    }
+
+    private boolean checkStatus(String arg) {
+        if (arg.equals("1")) {
+            return true;
+        }
+
+        if (arg.equals("0")) {
+            return false;
+        }
+
+        throw new StorageException("Invalid task status in storage file");
     }
 
     private String convertTaskToFileFormat(Task task) {

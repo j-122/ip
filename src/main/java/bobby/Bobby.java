@@ -1,6 +1,5 @@
 package bobby;
 
-import bobby.exception.BobbyException;
 import bobby.exception.InvalidTaskException;
 import bobby.exception.StorageException;
 import bobby.exception.TaskNotFoundException;
@@ -14,6 +13,7 @@ import bobby.task.Todo;
 import bobby.taskmanager.TaskManager;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 
 public class Bobby {
@@ -26,6 +26,7 @@ public class Bobby {
     private static final String MARK_COMMAND = "mark";
     private static final String UNMARK_COMMAND = "unmark";
     private static final String DELETE_COMMAND = "delete";
+    private static final String FIND_COMMAND = "find";
 
     private static final String TODO_KEYWORD = "todo";
     private static final String DEADLINE_KEYWORD = "deadline";
@@ -87,6 +88,7 @@ public class Bobby {
                 case MARK_COMMAND -> handleTaskMarking(arguments);
                 case UNMARK_COMMAND -> handleTaskUnmarking(arguments);
                 case DELETE_COMMAND -> handleTaskDeletion(arguments);
+                case FIND_COMMAND -> handleTaskSearch(arguments);
                 case TODO_KEYWORD -> addTodo(arguments);
                 case DEADLINE_KEYWORD -> addDeadline(arguments);
                 case EVENT_KEYWORD -> addEvent(arguments);
@@ -129,6 +131,15 @@ public class Bobby {
         applyFileChanges();
     }
 
+    private void handleTaskSearch(String keyword) {
+        if (keyword.isBlank()) {
+            throw new InvalidTaskException("Please provide a keyword to search for.");
+        }
+
+        ArrayList<Task> matches = taskManager.findTasks(keyword);
+        ui.showMatchedTasks(matches);
+    }
+
 
     private void addTodo(String args) {
         Todo todo = Parser.parseTodo(args);
@@ -155,8 +166,8 @@ public class Bobby {
     private void applyFileChanges() {
         try {
             storage.saveFile(taskManager.getTasks());
-        } catch (IOException e) {
-            ui.showErrorMessage("Something happened while saving file.");
+        } catch (StorageException e) {
+            ui.showErrorMessage(e.getMessage());
         }
     }
 }

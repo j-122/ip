@@ -1,13 +1,11 @@
 package bobby.taskmanager;
 
-import bobby.storage.Storage;
-import bobby.ui.Ui;
 import bobby.exception.InvalidTaskException;
 import bobby.exception.TaskNotFoundException;
 import bobby.task.Task;
 
 import java.util.ArrayList;
-import java.io.IOException;
+
 
 public class TaskManager {
     private static final int MAX_TASK_COUNT = 100;
@@ -65,5 +63,18 @@ public class TaskManager {
     public void unmarkTask(int taskNumber) {
         Task task = getTask(taskNumber);
         task.markAsNotDone();
+    }
+
+    public ArrayList<Task> findTasks(String keyword) {
+        ArrayList<Task> matchingTasks = new ArrayList<>();
+        String keywordInLowerCase = keyword.toLowerCase();
+
+        for (Task task : tasks) {
+            if (task.getTaskDescription().toLowerCase().contains(keywordInLowerCase)) {
+                matchingTasks.add(task);
+            }
+        }
+
+        return matchingTasks;
     }
 }

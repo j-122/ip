@@ -73,12 +73,29 @@ public class Ui {
         if (tasks.isEmpty()) {
             message = "So empty...";
         } else {
-            message = "Here are your tasks:\n";
-            for (int i = 0; i < tasks.size(); i++) {
-                message += "\t" + (i + 1) + ". " + tasks.get(i) + "\n";
-            }
+            message = "Here are your tasks:\n" + convertTaskListToStringFormat(tasks);
         }
 
         printWithBorder(message);
+    }
+
+    public void showMatchedTasks(ArrayList<Task> tasks) {
+        String message;
+        if (tasks.isEmpty()) {
+            message = "No similar tasks were found.";
+        } else {
+            message = "Here are the matched tasks:\n" + convertTaskListToStringFormat(tasks);
+        }
+
+        printWithBorder(message);
+    }
+
+    private String convertTaskListToStringFormat(ArrayList<Task> tasks) {
+        String formattedList = "";
+        for (int i = 0; i < tasks.size(); i++) {
+            formattedList += "\t" + (i + 1) + ". " + tasks.get(i) + "\n";
+        }
+
+        return formattedList;
     }
 }
