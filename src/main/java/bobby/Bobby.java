@@ -3,19 +3,22 @@ package bobby;
 import bobby.exception.InvalidTaskException;
 import bobby.exception.StorageException;
 import bobby.exception.TaskNotFoundException;
+
+import bobby.ui.Ui;
 import bobby.parser.Parser;
 import bobby.storage.Storage;
-import bobby.ui.Ui;
+import bobby.taskmanager.TaskManager;
+
 import bobby.task.Deadline;
 import bobby.task.Event;
 import bobby.task.Task;
 import bobby.task.Todo;
-import bobby.taskmanager.TaskManager;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
-
+/**
+ * Manages the Bobby application
+ */
 public class Bobby {
     private TaskManager taskManager;
     private Ui ui;
@@ -32,6 +35,12 @@ public class Bobby {
     private static final String DEADLINE_KEYWORD = "deadline";
     private static final String EVENT_KEYWORD = "event";
 
+    /**
+     * Creates a Bobby object that uses
+     * the specified data file.
+     *
+     * @param filePath the path to the data file
+     */
     public Bobby(String filePath) {
         ui = new Ui();
         storage = new Storage(filePath);
@@ -44,6 +53,9 @@ public class Bobby {
         }
     }
 
+    /**
+     * Starts the application and processes user inputs.
+     */
     public void run() {
         greetUser();
 
@@ -53,13 +65,18 @@ public class Bobby {
             isRunning = handleInput(inputLine);
         }
 
+        applyFileChanges();
         sayGoodbye();
     }
 
+    /**
+     * Initialises the Bobby application using the default data file.
+     *
+     * @param args command-line arguments
+     */
     public static void main(String[] args) {
         new Bobby("data/tasks.txt").run();
     }
-
 
     private void greetUser() {
         ui.showBanner();
@@ -70,6 +87,13 @@ public class Bobby {
         ui.showGoodbyeMessage();
     }
 
+    /**
+     * Processes a single line of user input
+     * and executes the corresponding command.
+     *
+     * @param inputLine the line of user input
+     * @return true if the application should continue running, otherwise false
+     */
     private boolean handleInput(String inputLine) {
         boolean isRunning = true;
 
@@ -95,7 +119,7 @@ public class Bobby {
                 default -> ui.showErrorMessage("No such command. Try again.");
             }
         } catch (NumberFormatException e) {
-            ui.showErrorMessage("Task number must a valid number...");
+            ui.showErrorMessage("Task number must be a valid number...");
         } catch (TaskNotFoundException | InvalidTaskException e) {
             ui.showErrorMessage(e.getMessage());
         }
@@ -107,22 +131,37 @@ public class Bobby {
         ui.showTaskList(taskManager.getTasks());
     }
 
+    /**
+     * Marks the specified task as done and displays the task.
+     *
+     * @param number the task number
+     */
     private void handleTaskMarking(String number) {
         int taskNumber = Parser.getTaskNumber(number);
-        taskManager.markTask(taskNumber);
+        Task task = taskManager.markTask(taskNumber);
 
-        ui.showMarkedTask(taskManager.getTask(taskNumber));
+        ui.showMarkedTask(task);
         applyFileChanges();
     }
 
+    /**
+     * Marks the specified task as undone and displays the task.
+     *
+     * @param number the task number
+     */
     private void handleTaskUnmarking(String number) {
         int taskNumber = Parser.getTaskNumber(number);
-        taskManager.unmarkTask(taskNumber);
+        Task task = taskManager.unmarkTask(taskNumber);
 
-        ui.showUnmarkedTask(taskManager.getTask(taskNumber));
+        ui.showUnmarkedTask(task);
         applyFileChanges();
     }
 
+    /**
+     * Deletes the specified task and displays the deleted task.
+     *
+     * @param number the task number
+     */
     private void handleTaskDeletion(String number) {
         int taskNumber = Parser.getTaskNumber(number);
         Task deletedTask = taskManager.deleteTask(taskNumber);
@@ -131,6 +170,12 @@ public class Bobby {
         applyFileChanges();
     }
 
+    /**
+     * Searches for tasks matching the given keyword and displays all matches.
+     *
+     * @param keyword the keyword to search for
+     * @throws InvalidTaskException if the keyword is blank
+     */
     private void handleTaskSearch(String keyword) {
         if (keyword.isBlank()) {
             throw new InvalidTaskException("Please provide a keyword to search for.");
@@ -140,6 +185,17 @@ public class Bobby {
         ui.showMatchedTasks(matches);
     }
 
+    /**
+     * Adds a task, displays a confirmation message
+     * and saves the changes to the data file.
+     *
+     * @param task the task to add
+     */
+    private void registerTask(Task task) {
+        taskManager.addTask(task);
+        ui.showAddedTask(task, taskManager.getTaskCount());
+        applyFileChanges();
+    }
 
     private void addTodo(String args) {
         Todo todo = Parser.parseTodo(args);
@@ -157,12 +213,9 @@ public class Bobby {
         registerTask(event);
     }
 
-    private void registerTask(Task task) {
-        taskManager.addTask(task);
-        ui.showAddedTask(task, taskManager.getTaskCount());
-        applyFileChanges();
-    }
-
+    /**
+     * Saves the current list of tasks to the data file.
+     */
     private void applyFileChanges() {
         try {
             storage.saveFile(taskManager.getTasks());
