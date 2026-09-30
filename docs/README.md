@@ -231,6 +231,7 @@ bye
 Bobby automatically saves your list after every change.
 Your task list is automatically loaded when Bobby starts and saved when exiting.
 ---
+# Command Summary
 
 | Command | Format | Description |
 | --- | --- | --- |
