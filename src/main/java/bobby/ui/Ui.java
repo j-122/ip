@@ -10,7 +10,8 @@ import java.util.Scanner;
  */
 public class Ui {
     private final Scanner scanner;
-    private static final String BORDER = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+    private static final String BORDER_CHAR = "~";
+    private static final int EXTRA_SPACING = 10;
 
     /**
      * Creates an Ui object for user interaction.
@@ -29,14 +30,24 @@ public class Ui {
     }
 
     /**
-     * Prints a message surrounded by a border.
+     * Prints a message surrounded by a border
+     * adjusted to the maximum line length.
      *
      * @param message the message to display
      */
     private void printWithBorder(String message) {
-        System.out.println(BORDER);
+        String[] lines = message.split("\n");
+
+        int maxLength = 0;
+        for (String line : lines) {
+            maxLength = Math.max(maxLength, line.length());
+        }
+
+        String border = BORDER_CHAR.repeat(maxLength + EXTRA_SPACING);
+
+        System.out.println(border);
         System.out.println(indent(message));
-        System.out.println(BORDER);
+        System.out.println(border);
     }
 
     /**
