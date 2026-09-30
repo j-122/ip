@@ -232,15 +232,14 @@ Bobby automatically saves your list after every change.
 Your task list is automatically loaded when Bobby starts and saved when exiting.
 ---
 
-# Command Summary
-| Command | Format                                  | Description |
-|---|-----------------------------------------|---|
-| `todo` | `todo <description>`                    | Adds a Todo task |
-| `deadline` | `deadline <description> / <deadline>`   | Adds a Deadline task |
+| Command | Format | Description |
+| --- | --- | --- |
+| `todo` | `todo <description>` | Adds a Todo task |
+| `deadline` | `deadline <description> / <deadline>` | Adds a Deadline task |
 | `event` | `event <description> / <start> / <end>` | Adds an Event task |
-| `list` | `list`                                  | Lists all tasks |
-| `mark` | `mark <task number>`                    | Marks a task as done |
-| `unmark` | `unmark <task number>`                  | Marks a task as not done |
-| `delete` | `delete <task number>`                  | Deletes a task |
-| `find` | `find <keyword>`                        | Finds tasks containing the keyword |
-| `bye` | `bye`                                   | Exits Bobby |
+| `list` | `list` | Lists all tasks |
+| `mark` | `mark <task number>` | Marks a task as done |
+| `unmark` | `unmark <task number>` | Marks a task as not done |
+| `delete` | `delete <task number>` | Deletes a task |
+| `find` | `find <keyword>` | Finds tasks containing the keyword |
+| `bye` | `bye` | Exits Bobby |
